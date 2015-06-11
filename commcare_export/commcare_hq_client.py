@@ -4,9 +4,11 @@ import logging
 
 # This import pattern supports Python 2 and 3
 from requests.auth import HTTPDigestAuth
+from commcare_export.auth import ApiAuth
 
 AUTH_MODE_SESSION = 'session'
 AUTH_MODE_DIGEST = 'digest'
+AUTH_MODE_API_KEY = 'api-key'
 
 try:
     from urllib.request import urlopen
@@ -69,8 +71,10 @@ class CommCareHqClient(object):
             if response.status_code != 200:
                 raise Exception('Authentication failed (%s): %s' % (response.status_code, response.text))
             
-        elif mode == 'digest':
+        elif mode == AUTH_MODE_DIGEST:
             auth = HTTPDigestAuth(username, password)
+        elif mode == AUTH_MODE_API_KEY:
+            auth = ApiAuth(username, password)
         else:
             raise Exception('Unknown auth mode: %s' % mode)
 
